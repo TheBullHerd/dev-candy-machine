@@ -40,6 +40,12 @@ yarn build
 To run the project, first rename the `.env.example` file at the root directory to `.env` and update the following variables:
 
 ```
+REACT_APP_MINT_PRICE_SOL=__PLACEHOLDER__
+```
+
+This is NFT price.
+
+```
 REACT_APP_CANDY_MACHINE_CONFIG=__PLACEHOLDER__
 ```
 
