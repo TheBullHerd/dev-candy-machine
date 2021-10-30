@@ -46,6 +46,7 @@ const Home = (props: HomeProps) => {
   const [isActive, setIsActive] = useState(false); // true when countdown completes
   const [isSoldOut, setIsSoldOut] = useState(false); // true when items remaining is zero
   const [isMinting, setIsMinting] = useState(false); // true when user got to press MINT
+  const [isRefreshing, setIsRefreshing] = useState(false); // true when page is refreshing after multi-mint
 
   const [itemsAvailable, setItemsAvailable] = useState(0);
   const [itemsRedeemed, setItemsRedeemed] = useState(0);
@@ -245,12 +246,14 @@ const Home = (props: HomeProps) => {
       });
     } finally {
       setIsMinting(false);
+      setIsRefreshing(true);
       await sleep(10000);
       if (wallet?.publicKey) {
         const balance = await props.connection.getBalance(wallet?.publicKey);
         setBalance(balance / LAMPORTS_PER_SOL);
       }
-      refreshCandyMachineState();
+      await refreshCandyMachineState();
+      setIsRefreshing(false);
     }
   };
 
@@ -275,13 +278,19 @@ const Home = (props: HomeProps) => {
         <p>Wallet {shortenAddress(wallet.publicKey.toBase58() || "")}</p>
       )}
 
-      {wallet && <p>Balance: {(balance || 0).toLocaleString()} SOL</p>}
+      {!isRefreshing ? (
+        <div>
+          {wallet && <p>Balance: {(balance || 0).toLocaleString()} SOL</p>}
 
-      {wallet && <p>Total Available: {itemsAvailable}</p>}
+          {wallet && <p>Total Available: {itemsAvailable}</p>}
 
-      {wallet && <p>Redeemed: {itemsRedeemed}</p>}
+          {wallet && <p>Redeemed: {itemsRedeemed}</p>}
 
-      {wallet && <p>Remaining: {itemsRemaining}</p>}
+          {wallet && <p>Remaining: {itemsRemaining}</p>}
+        </div>
+      ) : (
+        <CircularProgress />
+      )}
 
       <MintContainer>
         {!wallet ? (
