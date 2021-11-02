@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 import Countdown from "react-countdown";
-import { Button, CircularProgress, Snackbar } from "@material-ui/core";
+import { Button, CircularProgress, Snackbar, Select, MenuItem } from "@material-ui/core";
 import Alert from "@material-ui/lab/Alert";
 
 import * as anchor from "@project-serum/anchor";
@@ -51,6 +51,12 @@ const Home = (props: HomeProps) => {
   const [itemsAvailable, setItemsAvailable] = useState(0);
   const [itemsRedeemed, setItemsRedeemed] = useState(0);
   const [itemsRemaining, setItemsRemaining] = useState(0);
+
+  const [mintCount, setMintCount] = useState(1);
+
+  const handleMintCountChange = (event: any) => {
+    setMintCount(event.target.value);
+  };
 
   const [alertState, setAlertState] = useState<AlertState>({
     open: false,
@@ -156,8 +162,14 @@ const Home = (props: HomeProps) => {
     }
   };
 
-  const onMintMultiple = async () => {
-    const quantity = 10;
+  const onMintMultiple = async (_quantity: any) => {
+    const quantity = parseInt(_quantity);
+
+    if (quantity === 1) {
+      await onMint();
+      return;
+    }
+
     try {
       setIsMinting(true);
       if (wallet && candyMachine?.program) {
@@ -299,7 +311,7 @@ const Home = (props: HomeProps) => {
           <div>
             <MintButton
               disabled={isSoldOut || isMinting || !isActive}
-              onClick={onMint}
+              onClick={() => {onMintMultiple(mintCount)}}
               variant="contained"
             >
               {isSoldOut ? (
@@ -319,30 +331,23 @@ const Home = (props: HomeProps) => {
                 />
               )}
             </MintButton>
-            <br/>
-            <br/>
-            <MintButton
-              disabled={isSoldOut || isMinting || !isActive}
-              onClick={onMintMultiple}
-              variant="contained"
+            <Select
+              value={mintCount}
+              label="Mint Count"
+              onChange={handleMintCountChange}
+              style={{ marginLeft: 20, width: 60 }}
             >
-              {isSoldOut ? (
-                "SOLD OUT"
-              ) : isActive ? (
-                isMinting ? (
-                  <CircularProgress />
-                ) : (
-                  "MINT 10"
-                )
-              ) : (
-                <Countdown
-                  date={startDate}
-                  onMount={({ completed }) => completed && setIsActive(true)}
-                  onComplete={() => setIsActive(true)}
-                  renderer={renderCounter}
-                />
-              )}
-            </MintButton>
+              <MenuItem value={1}>1</MenuItem>
+              <MenuItem value={2}>2</MenuItem>
+              <MenuItem value={3}>3</MenuItem>
+              <MenuItem value={4}>4</MenuItem>
+              <MenuItem value={5}>5</MenuItem>
+              <MenuItem value={6}>6</MenuItem>
+              <MenuItem value={7}>7</MenuItem>
+              <MenuItem value={8}>8</MenuItem>
+              <MenuItem value={9}>9</MenuItem>
+              <MenuItem value={10}>10</MenuItem>
+            </Select>
           </div>
         )}
       </MintContainer>
