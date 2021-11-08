@@ -292,7 +292,8 @@ const Home = (props: HomeProps) => {
 
       {!isRefreshing ? (
         <div>
-          Price : {MINT_PRICE_SOL} SOL
+          {wallet && <p>Price : {MINT_PRICE_SOL} SOL</p>}
+
           {wallet && <p>Balance: {(balance || 0).toLocaleString()} SOL</p>}
 
           {wallet && <p>Total Available: {itemsAvailable}</p>}
